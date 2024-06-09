@@ -50,7 +50,7 @@ exports.placeOrder = async (req, res) => {
         };
       });
   
-      const totalAmount = calculateTotalAmount(updatedItems, restaurant.menu);  
+      const totalAmount = calculateTotalAmount(updatedItems, restaurant.menu); // Calculate with updated items
   
       const newOrder = new Order({
         userId,
@@ -111,10 +111,12 @@ exports.rateDeliveryAgent = async (req, res) => {
         return res.status(404).json({ error: 'Delivery agent not found.' });
       }
   
-      const currentRatingSum = deliveryAgent.rating * deliveryAgent.ratingsCount || 0;  
+      const currentRatingSum = deliveryAgent.rating * deliveryAgent.ratingsCount || 0; 
+      const newRatingSum = currentRatingSum + rating;
       const newRatingsCount = (deliveryAgent.ratingsCount || 0) + 1;
       deliveryAgent.rating = newRatingSum / newRatingsCount; 
       deliveryAgent.ratingsCount = newRatingsCount; 
+  
       await deliveryAgent.save();
   
       res.status(200).json({ message: 'Delivery agent rated successfully!' });
