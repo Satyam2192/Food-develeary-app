@@ -1,21 +1,20 @@
-# Stage 1: Build the application
 FROM node:18-alpine AS builder
 
-WORKDIR /app
+WORKDIR /usr/src/app  
 
 COPY package*.json ./
-RUN npm install
 
-COPY . .
+RUN npm install 
 
-# Stage 2: Production-ready image
+COPY . . 
+
 FROM node:18-alpine
 
-WORKDIR /app
+WORKDIR /usr/src/app
 
-COPY --from=builder /app/node_modules ./node_modules
-COPY --from=builder /app/server.js ./
+COPY --from=builder /usr/src/app/node_modules ./node_modules
+COPY --from=builder /usr/src/app/server.js ./
+COPY --from=builder /usr/src/app/package.json ./package.json
 
 EXPOSE 8000 
-
 CMD ["npm", "run", "run"] 

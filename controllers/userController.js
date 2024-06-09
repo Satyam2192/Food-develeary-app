@@ -3,7 +3,6 @@ const Restaurant = require('../models/restaurant');
 const Order = require('../models/order');
 const DeliveryAgent = require('../models/deliveryAgent');
 
-// ... Helper function to calculate total amount
 const calculateTotalAmount = (items, menu) => {
   let totalAmount = 0;
   items.forEach((item) => {
@@ -19,7 +18,6 @@ exports.getAvailableRestaurants = async (req, res) => {
   try {
     const { userId } = req.params;
 
-    // Implement logic to fetch restaurants based on current hour and user location if needed
     const restaurants = await Restaurant.find({ online: true });
 
     res.status(200).json(restaurants);
@@ -40,7 +38,6 @@ exports.placeOrder = async (req, res) => {
         return res.status(404).json({ error: 'User or restaurant not found!' });
       }
   
-      // Find the price for each item from the restaurant's menu
       const updatedItems = items.map(item => {
         const menuItem = restaurant.menu.find(menuItem => menuItem.name === item.name);
         if (!menuItem) {
@@ -53,7 +50,7 @@ exports.placeOrder = async (req, res) => {
         };
       });
   
-      const totalAmount = calculateTotalAmount(updatedItems, restaurant.menu); // Calculate with updated items
+      const totalAmount = calculateTotalAmount(updatedItems, restaurant.menu);  
   
       const newOrder = new Order({
         userId,
@@ -77,11 +74,10 @@ exports.placeOrder = async (req, res) => {
       const { userId, orderId } = req.params;
       const { rating } = req.body; 
   
-      // Use findByIdAndUpdate to update only the rating field
       const updatedOrder = await Order.findByIdAndUpdate(
         orderId, 
         { rating: rating }, 
-        { new: true } // This option returns the updated document
+        { new: true } 
       );
   
       if (!updatedOrder) {
@@ -101,30 +97,24 @@ exports.rateDeliveryAgent = async (req, res) => {
       const { userId, deliveryAgentId } = req.params;
       const { rating } = req.body;
   
-      // 1. Validate the rating value (1-5)
       if (rating < 1 || rating > 5) {
         return res.status(400).json({ error: 'Invalid rating. Rating should be between 1 and 5.' });
       }
   
-      // 2. Find the order to ensure the user is rating a delivery agent they interacted with
       const order = await Order.findOne({ userId, deliveryAgentId }); 
       if (!order) {
         return res.status(404).json({ error: 'No order found for this user and delivery agent combination.' });
       }
   
-      // 3. Update the delivery agent's rating (you can implement a more complex rating system)
       const deliveryAgent = await DeliveryAgent.findById(deliveryAgentId);
       if (!deliveryAgent) {
         return res.status(404).json({ error: 'Delivery agent not found.' });
       }
   
-      // Simple average rating calculation (you can improve this):
-      const currentRatingSum = deliveryAgent.rating * deliveryAgent.ratingsCount || 0; // Handle cases where ratingsCount might not exist initially
-      const newRatingSum = currentRatingSum + rating;
+      const currentRatingSum = deliveryAgent.rating * deliveryAgent.ratingsCount || 0;  
       const newRatingsCount = (deliveryAgent.ratingsCount || 0) + 1;
       deliveryAgent.rating = newRatingSum / newRatingsCount; 
-      deliveryAgent.ratingsCount = newRatingsCount; // Update the ratings count
-  
+      deliveryAgent.ratingsCount = newRatingsCount; 
       await deliveryAgent.save();
   
       res.status(200).json({ message: 'Delivery agent rated successfully!' });

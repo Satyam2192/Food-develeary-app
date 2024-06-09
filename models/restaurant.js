@@ -17,16 +17,16 @@ const restaurantSchema = new mongoose.Schema({
     state: { type: String },
     zipCode: { type: String },
   },
-  // New openingHours field
   openingHours: {
-    // You can customize this structure based on your needs
-    // Example using days of the week and time ranges
+
     monday: { open: String, close: String }, 
     tuesday: { open: String, close: String },
-    // ... (add other days of the week)
+    wednesday: { open: String, close: String },
+    thursday: { open: String, close: String },
+    friday: { open: String, close: String },
+    saturday: { open: String, close: String },
     sunday: { open: String, close: String },
   }, 
-  // ... other potential restaurant details 
 });
 
 module.exports = mongoose.model('Restaurant', restaurantSchema);

@@ -17,13 +17,11 @@ const orderSchema = new mongoose.Schema({
   deliveryAgentId: { type: mongoose.Schema.Types.ObjectId, ref: 'DeliveryAgent' },
   rating: { type: Number, min: 1, max: 5 },
 
-  // New fields added:
   deliveryAddress: { 
     street: { type: String, required: true },
     city: { type: String, required: true },
-    // Add more address fields as needed (state, zip code, etc.)
   },
-  orderTime: { type: Date, default: Date.now }, // Automatically stores order placement time 
+  orderTime: { type: Date, default: Date.now }, 
 });
 
 module.exports = mongoose.model('Order', orderSchema);

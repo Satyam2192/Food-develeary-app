@@ -44,18 +44,17 @@ exports.updateOrderStatus = async (req, res) => {
         return res.status(404).json({ error: 'Order not found!' });
       }
   
-      // If accepting the order, try to auto-assign a delivery agent
+      // If accepting the order -> auto-assign a delivery agent
       if (status === 'accepted') {
         const availableAgent = await DeliveryAgent.findOne({ available: true });
         if (availableAgent) {
-          // Update order with delivery agent and status using findByIdAndUpdate
           const updatedOrder = await Order.findByIdAndUpdate(
             orderId, 
             { status: status, deliveryAgentId: availableAgent._id }, 
             { new: true }
           );
   
-          if (!updatedOrder) { // Handle case where order was not found or update failed
+          if (!updatedOrder) { 
             return res.status(500).json({ error: 'Failed to update order status and assign agent!' });
           }
   
@@ -63,10 +62,8 @@ exports.updateOrderStatus = async (req, res) => {
           await availableAgent.save(); 
         } else {
           console.log('No delivery agents available at the moment.');
-          // You might want to handle this differently, maybe set a flag on the order 
         }
       } else {
-        // For other statuses, just update the status
         const updatedOrder = await Order.findByIdAndUpdate(
           orderId,
           { status: status },
